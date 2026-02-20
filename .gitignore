@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environments
+.env
+.venv/
+env/
+venv/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
+
+# Byte-compiled / distribution
+build/
+dist/
+*.egg-info/
+
+# Ignore OS files
+Thumbs.db
+
+# Keep raw data tracked by default; user can modify if needed
+# DATA/
