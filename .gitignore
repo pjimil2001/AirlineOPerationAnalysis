@@ -30,5 +30,11 @@ dist/
 # Ignore OS files
 Thumbs.db
 
+# Large dataset files
+Cleaned Dataset/
+*.csv
+!DATA/airlines.csv
+!DATA/airports.csv
+
 # Keep raw data tracked by default; user can modify if needed
 # DATA/
