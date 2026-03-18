@@ -1,12 +1,22 @@
 # Airline Operation Analysis
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![Pandas](https://img.shields.io/badge/Pandas-1.6.2-blue?logo=pandas)
-![License](https://img.shields.io/badge/license-MIT-green)
+<p align="center">
+  <img src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/344/external-airplane-airport-flaticons-lineal-color-flat-icons.png" alt="Airline Operation Analysis Logo" width="120" />
+</p>
 
-**Capstone Project — Operational Bottleneck Identification and Performance Optimization in the U.S. Airline Industry**
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/Pandas-1.6.2-blue?logo=pandas" alt="Pandas" />
+  <img src="https://img.shields.io/badge/Tableau-Analytics-orange?logo=tableau" alt="Tableau" />
+  <img src="https://img.shields.io/badge/Databricks-Notebook-critical?logo=databricks" alt="Databricks" />
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" />
+</p>
 
-This repository contains an end-to-end **Airline Operation Analysis** pipeline that cleans, enriches, and analyzes U.S. domestic flight data (2015). It produces a validated, feature-rich dataset suitable for descriptive analytics, delay/cancellation analysis, and operational insights.
+<p align="center">
+  <strong>Capstone Project — Operational Bottleneck Identification and Performance Optimization in the U.S. Airline Industry</strong>
+</p>
+
+This repository contains an end-to-end <strong>Airline Operation Analysis</strong> pipeline that cleans, enriches, and analyzes U.S. domestic flight data (2015). It produces a validated, feature-rich dataset suitable for descriptive analytics, delay/cancellation analysis, and operational insights.
 
 ---
 
