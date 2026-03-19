@@ -1,38 +1,37 @@
-# Airline Operation Analysis
+# Airline Operation Analysis (2015)
 
 <p align="center">
   <img src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/344/external-airplane-airport-flaticons-lineal-color-flat-icons.png" alt="Airline Operation Analysis Logo" width="120" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python" alt="Python 3.11" />
-  <img src="https://img.shields.io/badge/Pandas-1.6.2-blue?logo=pandas" alt="Pandas" />
+  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python" alt="Python" />
+  <img src="https://img.shields.io/badge/Pandas-Data%20Wrangling-blue?logo=pandas" alt="Pandas" />
+  <img src="https://img.shields.io/badge/Databricks-Notebooks-critical?logo=databricks" alt="Databricks" />
   <img src="https://img.shields.io/badge/Tableau-Analytics-orange?logo=tableau" alt="Tableau" />
-  <img src="https://img.shields.io/badge/Databricks-Notebook-critical?logo=databricks" alt="Databricks" />
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" />
+  <img src="https://img.shields.io/badge/SQL-Queries-2f6fdb?logo=sqlite" alt="SQL" />
 </p>
 
 <p align="center">
-  <strong>Capstone Project — Operational Bottleneck Identification and Performance Optimization in the U.S. Airline Industry</strong>
+  <strong>Capstone Project — Operational Bottleneck Identification and Performance Optimization in the U.S. Airline Industry</strong><br/>
+  <sub>Cleaning • Feature engineering • Descriptive analytics • Statistical analysis • Machine learning • Prescriptive analytics</sub>
 </p>
 
-This repository contains an end-to-end <strong>Airline Operation Analysis</strong> pipeline that cleans, enriches, and analyzes U.S. domestic flight data (2015). It produces a validated, feature-rich dataset suitable for descriptive analytics, delay/cancellation analysis, and operational insights.
+This repository contains an end-to-end pipeline that cleans, enriches, and analyzes **U.S. domestic flight operations data (2015)** to identify operational bottlenecks (airlines, airports, and time-of-day effects) and support decision-making.
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Key Results (Highlights)](#key-results-highlights)
 - [Objectives](#objectives)
 - [Repository Structure](#repository-structure)
 - [Data Sources](#data-sources)
 - [Pipeline Overview](#pipeline-overview)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Pipeline Steps (Detailed)](#pipeline-steps-detailed)
+- [How to Run](#how-to-run)
 - [Outputs](#outputs)
-- [Descriptive Analytics (Databricks)](#descriptive-analytics-databricks)
+- [Analytics Notebooks](#analytics-notebooks)
 - [Notes & Troubleshooting](#notes--troubleshooting)
 - [License](#license)
 
@@ -40,28 +39,63 @@ This repository contains an end-to-end <strong>Airline Operation Analysis</stron
 
 ## Overview
 
-The project processes raw flight records from the U.S. Bureau of Transportation Statistics (BTS), merges them with airline and airport lookup tables, validates and cleans time/date/code fields, removes invalid records, and enriches the data with airline/airport names and coordinates. A second stage adds engineered features (delay flags, season, congestion, etc.) for analytics. A third stage (Databricks notebook) performs descriptive analytics to identify airline-level and airport-level bottlenecks.
+The project:
 
-**Key capabilities:**
+- Validates and cleans dates/times and operational fields (delays, cancellations)
+- Validates airline and airport codes against lookup tables and removes invalid rows
+- Enriches raw flight records with airline and airport metadata (names, city/state, coordinates)
+- Builds engineered features (route, congestion, seasonality, delay flags, etc.)
+- Produces analysis notebooks (Databricks exports) for descriptive + statistical insights, ML modeling, and prescriptive recommendations
 
-- Load and validate ~5.8M flight rows (31 raw columns).
-- Standardize time columns (HHMM 0000–2359, 4-digit strings).
-- Handle cancelled flights (N/A for timing/delay fields) and cancellation reasons.
-- Validate airline/airport codes against IATA lookups and drop invalid rows.
-- Join airlines and airports metadata (names, city, state, lat/lon).
-- Fill missing coordinates for a few airports (ECP, PBG, UST).
-- Clean delay columns and set cancellation reason `NC` for non-cancelled flights.
-- Add features: delay flags, season, daypart, congestion, route, etc.
-- Save a final cleaned & enriched dataset (~5.3M rows, 50+ columns) for analysis.
+**Raw dataset scale (from `run_output.txt`):**
+
+- **Rows**: **5,819,079**
+- **Columns**: **31**
+
+---
+
+## Key Results (Highlights)
+
+The following results are taken directly from notebook outputs in this repo (Databricks export tables).
+
+### Airline-level performance (sample from `02_descriptive_analytics.ipynb`)
+
+| Airline | Total flights | Arrival delay rate | Cancel rate | Avg arrival delay (min) |
+|--------:|--------------:|-------------------:|------------:|-------------------------:|
+| NK | 117,379 | 0.4846 | 0.0171 | 14.20 |
+| F9 | 90,834 | 0.4539 | 0.0065 | 12.38 |
+| WN | 1,261,855 | 0.3731 | 0.0127 | 4.31 |
+| UA | 515,707 | 0.3611 | 0.0127 | 5.31 |
+| AA | 725,828 | 0.3472 | 0.0150 | 3.13 |
+| AS | 172,521 | 0.3301 | 0.0039 | -0.97 |
+| DL | 875,814 | 0.2863 | 0.0044 | 0.11 |
+
+**Highlights from the same output table:**
+
+- **Highest arrival delay rate (shown)**: `NK` (~48.5%), `F9` (~45.4%)
+- **Lowest arrival delay rate (shown)**: `DL` (~28.6%)
+- **Highest cancellation rate (in the table output)**: `MQ` (~5.10%)
+- **Lowest cancellation rate (in the table output)**: `HA` (~0.22%)
+
+### Time-of-day effect (from `06_summary&visuals.ipynb`)
+
+Arrival delay rate by **departure hour** shows clear propagation into evening operations:
+
+- **Best hour (lowest delay rate)**: **05:00** (~0.2056)
+- **Worst hour (highest delay rate)**: **19:00** (~0.4364)
+
+### Congestion insight (from `06_summary&visuals.ipynb`)
+
+- “**High traffic airports show higher delay rates, indicating congestion-driven inefficiencies.**”
 
 ---
 
 ## Objectives
 
-- **Data quality:** Produce a clean, consistent dataset with validated dates, times, and IATA codes.
-- **Enrichment:** Attach airline full names and airport metadata (name, city, state, coordinates).
-- **Feature engineering:** Add operational features (delay indicators, seasonality, congestion, route).
-- **Analytics:** Support descriptive analytics to identify delay/cancellation patterns by airline, airport, and time.
+- **Data quality**: Produce a clean, consistent dataset with validated dates/times and IATA codes
+- **Enrichment**: Attach airline names and airport metadata (city/state, lat/lon)
+- **Feature engineering**: Add operational features (delay flags, seasonality, route, congestion)
+- **Analytics**: Identify delay/cancellation patterns by airline, airport, and time-of-day
 
 ---
 
@@ -69,180 +103,92 @@ The project processes raw flight records from the U.S. Bureau of Transportation 
 
 ```
 AirlineOPerationAnalysis/
-├── README.md                    # This file
-├── requirements.txt             # Python dependencies (pandas, numpy, scipy)
-├── run_output.txt               # Example log from running the cleaning pipeline
+├── README.md
+├── requirements.txt
+├── run_output.txt
+├── Airline_Sql_Query.sql
 │
-├── Cleaning_and_Merging.py      # Step 1: Load, validate, clean, join, save
-├── 01_Feature_engineering.py    # Step 2: Add derived features to cleaned data
-├── 02_descriptive_analytics.py  # Step 3: Databricks notebook for SQL analytics
+├── Cleaning_and_Merging.py
+├── 01_Feature_engineering.py
 │
-├── DATA/                        # Input data and pipeline output
-│   ├── flights.csv              # Raw flight records (BTS 2015)
-│   ├── airlines.csv             # Airline IATA codes and full names
-│   ├── airports.csv             # Airport IATA codes, name, city, state, lat, lon
-│   └── flights_CLEANED_ENRICHED.csv   # Output: cleaned + enriched (+ optional features)
+├── 02_descriptive_analytics.ipynb
+├── 03_statistical_analysis.ipynb
+├── 04_machine_learing.ipynb
+├── 05_prescriptive_analytics.ipynb
+├── 06_summary&visuals.ipynb
 │
-├── Cleaned_dataset/             # Optional; can hold copies of cleaned output
-└── OUTPUT/                      # Optional; reports, exports, or model artifacts
+└── DATA/
+    ├── flights.csv
+    ├── airlines.csv
+    ├── airports.csv
+    └── flights_CLEANED_ENRICHED.csv
 ```
 
 ---
 
 ## Data Sources
 
-| File           | Description |
-|----------------|-------------|
-| `DATA/flights.csv`   | Raw flight data (year, month, day, airline, airports, times, delays, cancelled, etc.). |
-| `DATA/airlines.csv` | Lookup: IATA code → airline full name. |
-| `DATA/airports.csv` | Lookup: IATA code → airport name, city, state, latitude, longitude. |
-
-The flight data is **2015 U.S. domestic flights** (BTS-style). Ensure all three CSVs are present in `DATA/` before running the pipeline.
+| File | Description |
+|------|-------------|
+| `DATA/flights.csv` | Raw 2015 flight records (dates, carrier, airports, times, delays, cancellations, etc.) |
+| `DATA/airlines.csv` | Airline lookup (IATA code → airline full name) |
+| `DATA/airports.csv` | Airport lookup (IATA code → airport metadata and coordinates) |
 
 ---
 
 ## Pipeline Overview
 
-| Step | Script / Notebook           | Purpose |
-|------|-----------------------------|--------|
-| 1    | `Cleaning_and_Merging.py`  | Load flights, validate dates/times, clean times (2400→0, 4-digit), set N/A for cancelled, validate/remove invalid airport codes, join airlines/airports, fill missing lat/lon, check duplicates/junk, save `flights_CLEANED_ENRICHED.csv` to `DATA/`. |
-| 2    | `01_Feature_engineering.py`| Read cleaned CSV, add delay flags, season, daypart, route, congestion, etc., then overwrite or save to a new file. |
-| 3    | `02_descriptive_analytics.py` | Databricks notebook: SQL queries on a table (e.g. `finally_cleaned_data`) for airline/airport performance, monthly trends, route-level bottlenecks. |
-
-Run **Step 1**, then **Step 2**. Step 3 is intended for Databricks using a table created from the final CSV.
+| Step | Component | What it does |
+|------|----------|--------------|
+| 1 | `Cleaning_and_Merging.py` | Loads data, validates dates/times, fixes `2400` time edge cases, handles cancelled flights, validates codes, merges airline/airport lookups, fills missing coordinates (ECP/PBG/UST), saves cleaned/enriched CSV |
+| 2 | `01_Feature_engineering.py` | Adds features such as `ROUTE`, `DEPARTURE_HOUR`, `DAYPART`, `SEASON`, delay flags, distance category, tail-number utilization, and `ORIGIN_CONGESTION` |
+| 3+ | Notebooks (`02_*` → `06_*`) | Descriptive analytics, statistics, ML, prescriptive analysis, and a final executive summary with visuals |
 
 ---
 
-## Prerequisites
+## How to Run
 
-- **Python:** 3.11 (or compatible 3.x).
-- **OS:** Windows, macOS, or Linux.
-- **Disk:** Sufficient space for large CSV (~5M+ rows); output file can be on the order of hundreds of MB to over 1 GB uncompressed.
-- **Memory:** Recommended 4 GB+ RAM for loading the full flights CSV.
+### Prerequisites
 
----
+- **Python**: 3.11+ recommended
+- **RAM**: dataset is large (raw load reported ~1.3 GB in `run_output.txt`)
+- **Input files present**: ensure `DATA/` has `flights.csv`, `airlines.csv`, `airports.csv`
 
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone <repository-url>
-cd AirlineOPerationAnalysis
-```
-
-### 2. Create a virtual environment (recommended)
+### Install
 
 ```bash
 python -m venv .venv
 ```
 
-### 3. Activate the virtual environment
+Windows (PowerShell):
 
-- **Windows (PowerShell):**
-  ```powershell
-  .\.venv\Scripts\Activate.ps1
-  ```
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-- **macOS / Linux:**
-  ```bash
-  source .venv/bin/activate
-  ```
-
-### 4. Install dependencies
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If you prefer to install manually:
-
-```bash
-pip install pandas numpy scipy
-```
-
----
-
-## Usage
-
-### Run the full pipeline (cleaning + feature engineering)
-
-**Step 1 — Cleaning and merging (required first):**
+### Run cleaning + merge (Step 1)
 
 ```bash
 python Cleaning_and_Merging.py
 ```
 
-- Reads `DATA/flights.csv`, `DATA/airlines.csv`, `DATA/airports.csv`.
-- Writes `DATA/flights_CLEANED_ENRICHED.csv`.
-- Console output includes validation summaries and row counts.
-
-**Step 2 — Feature engineering (after Step 1):**
+### Run feature engineering (Step 2)
 
 ```bash
 python 01_Feature_engineering.py
 ```
 
-- Reads `DATA/flights_CLEANED_ENRICHED.csv` by default.
-- Overwrites the same file with added feature columns (or use `--output` to write elsewhere).
-
-Optional: specify input/output paths:
+Optional I/O overrides:
 
 ```bash
 python 01_Feature_engineering.py --input DATA/flights_CLEANED_ENRICHED.csv --output DATA/flights_FINAL.csv
 ```
-
-**Step 3 — Descriptive analytics:**
-
-- Use `02_descriptive_analytics.py` in **Databricks**.
-- Create a table (e.g. `finally_cleaned_data`) from the final CSV (e.g. from Step 2).
-- Run the notebook cells to get airline-level, airport-level, monthly, and route-level metrics.
-
----
-
-## Pipeline Steps (Detailed)
-
-### Step 1: `Cleaning_and_Merging.py`
-
-1. **Load** `DATA/flights.csv` (and list contents of `DATA/`).
-2. **Validate date columns:** YEAR (2015), MONTH (1–12), DAY (1–31), DAY_OF_WEEK (1–7).
-3. **Validate time columns:** SCHEDULED_DEPARTURE, DEPARTURE_TIME, WHEELS_OFF, WHEELS_ON, SCHEDULED_ARRIVAL, ARRIVAL_TIME (expected 0000–2359).
-4. **Clean times:** Replace 2400 → 0; convert to 4-digit zero-padded strings (`*_STR` columns).
-5. **Cancelled flights:** Set N/A (NaN/None) for departure/arrival times and delay fields where `CANCELLED == 1`.
-6. **Validate codes:** Check AIRLINE against `airlines.csv`, ORIGIN_AIRPORT and DESTINATION_AIRPORT against `airports.csv`.
-7. **Remove invalid rows:** Drop rows where either airport code is not in `airports.csv`.
-8. **Cancellation reason:** Set `CANCELLATION_REASON = 'NC'` for non-cancelled flights.
-9. **Delay columns:** Clean AIR_SYSTEM_DELAY, SECURITY_DELAY, AIRLINE_DELAY, LATE_AIRCRAFT_DELAY, WEATHER_DELAY (numeric, fill missing with 0).
-10. **Join lookups:** Merge airlines (add AIRLINE_FULL_NAME) and airports (add name, city, state, lat, lon for origin and destination).
-11. **Fill missing coordinates:** ECP, PBG, UST (from FAA/official sources).
-12. **Duplicate & junk check:** Report full duplicate rows and basic text validation on key columns.
-13. **Save:** Write `DATA/flights_CLEANED_ENRICHED.csv`.
-
-### Step 2: `01_Feature_engineering.py`
-
-Adds (among others):
-
-- **ROUTE:** `ORIGIN_AIRPORT-DESTINATION_AIRPORT`
-- **DEPARTURE_HOUR,** **DAYPART** (Night/Morning/Afternoon/Evening), **IS_PEAK_HOUR,** **IS_WEEKEND**
-- **SEASON** (Winter/Spring/Summer/Fall from MONTH)
-- **IS_DELAYED_DEPARTURE / IS_DELAYED_ARRIVAL** (>15 min), **TOTAL_DELAY,** **HAS_WEATHER_DELAY**
-- **IS_CANCELLED,** **IS_DIVERTED**
-- **DISTANCE_CATEGORY** (short/medium/long haul)
-- **FLIGHT_DATE,** **ISO_YEAR,** **ISO_WEEK**
-- **FLIGHTS_PER_TAIL_NUMBER_PER_DAY,** **FLIGHTS_PER_TAIL_NUMBER_PER_WEEK**
-- **ORIGIN_CONGESTION** (departures per origin per hour)
-
-Reads from and (by default) overwrites the cleaned-enriched CSV.
-
-### Step 3: `02_descriptive_analytics.py`
-
-Databricks notebook that runs SQL on a table (e.g. `finally_cleaned_data`) to produce:
-
-- Executive snapshot (total flights, delay rate, cancellation rate, avg arrival delay).
-- Airline-level performance (delay rates, cancellation rate, avg delay by carrier).
-- Airport congestion (delay rate, cancellation rate, avg congestion by origin).
-- Monthly delay and cancellation trends.
-- Route-level or other operational views.
 
 ---
 
@@ -250,34 +196,33 @@ Databricks notebook that runs SQL on a table (e.g. `finally_cleaned_data`) to pr
 
 | Output | Location | Description |
 |--------|----------|-------------|
-| Cleaned & enriched CSV | `DATA/flights_CLEANED_ENRICHED.csv` | After Step 1: validated rows, joined airline/airport metadata, cleaned times and delays. |
-| Feature-engineered CSV | Same file (or path given by `--output`) | After Step 2: same as above plus ROUTE, SEASON, delay flags, congestion, etc. |
-| Run log (example) | `run_output.txt` | Sample console output from a pipeline run. |
-
-Approximate size: hundreds of MB to over 1 GB for the full CSV (uncompressed). Row count after cleaning is roughly ~5.33M (invalid airport rows removed).
+| Cleaned & enriched dataset | `DATA/flights_CLEANED_ENRICHED.csv` | Produced by Step 1; cleaned and joined with airline/airport metadata |
+| Feature-engineered dataset | Same file (or `--output`) | Produced by Step 2; adds route, seasonality, delay flags, congestion features, etc. |
+| Example run log | `run_output.txt` | Console log captured from running Step 1 |
 
 ---
 
-## Descriptive Analytics (Databricks)
+## Analytics Notebooks
 
-The file `02_descriptive_analytics.py` is a **Databricks notebook** (with `# MAGIC %md` and `# MAGIC %sql`). To use it:
+These notebooks are Databricks exports included in the repo:
 
-1. Import or paste the notebook into a Databricks workspace.
-2. Create a table (e.g. in a catalog/schema such as `tables.default`) from the final CSV produced by Step 2, and name it e.g. `finally_cleaned_data`.
-3. Run the notebook; it will query this table for industry snapshot, airline performance, airport congestion, and monthly trends.
+- **`02_descriptive_analytics.ipynb`**: airline/airport performance, delay & cancellation patterns, congestion views
+- **`03_statistical_analysis.ipynb`**: statistical exploration and tests
+- **`04_machine_learing.ipynb`**: predictive modeling workflow (file name kept as-is)
+- **`05_prescriptive_analytics.ipynb`**: prescriptive recommendations
+- **`06_summary&visuals.ipynb`**: executive summary + visuals and consolidated insights
 
 ---
 
 ## Notes & Troubleshooting
 
-- **CSV encoding:** The main script sets UTF-8 for stdout/stderr on Windows to avoid `charmap` errors when printing.
-- **Mixed types warning:** If pandas warns about mixed types in columns (e.g. 7, 8), you can load with `dtype` specified or `low_memory=False` in `read_csv` if needed.
-- **DATA folder:** Ensure `DATA/` exists and contains `flights.csv`, `airlines.csv`, and `airports.csv` before running Step 1.
-- **Order of execution:** Always run `Cleaning_and_Merging.py` before `01_Feature_engineering.py`; the feature script expects the cleaned-enriched CSV.
-- **Memory:** For very large machines, the full dataset loads in memory; if needed, consider chunked reading or sampling for experimentation.
+- **`run_output.txt` encoding**: the file is UTF-16 (so it may look “weird” in some editors); open with UTF-16/Unicode encoding.
+- **Mixed dtypes warning**: you may see pandas `DtypeWarning` for airport code columns; setting `low_memory=False` or explicit `dtype=` can help.
+- **Order of execution**: run `Cleaning_and_Merging.py` before `01_Feature_engineering.py`.
 
 ---
 
 ## License
 
-This project is provided under the **MIT License**. See the `LICENSE` file in the repository for full text.
+MIT
+
